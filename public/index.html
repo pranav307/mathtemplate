@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Math Template API - Complete Frontend</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f9fafc;
+      padding: 20px;
+      color: #222;
+    }
+    h1 {
+      text-align: center;
+      color: #0056b3;
+    }
+    section {
+      background: #fff;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+    h2 {
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 6px;
+    }
+    button {
+      background: #007bff;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+    .result {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 Math Template API — Full Frontend</h1>
+
+  <!-- Compound Interest -->
+  <section>
+    <h2>Compound Interest</h2>
+    <label>P: <input id="ciP" type="number" value="5000"></label>
+    <label>R(%): <input id="ciR" type="number" value="10"></label>
+    <label>T(years): <input id="ciT" type="number" value="2"></label>
+    <label>Compounding/year: <input id="ciN" type="number" value="1"></label>
+    <button id="ciBtn">Compute</button>
+    <div class="result" id="ciResult"></div>
+    <pre id="ciSteps"></pre>
+  </section>
+
+  <!-- Simple Interest -->
+  <section>
+    <h2>Simple Interest</h2>
+    <label>P: <input id="siP" type="number" value="8000"></label>
+    <label>R(%): <input id="siR" type="number" value="5"></label>
+    <label>T(years): <input id="siT" type="number" value="3"></label>
+    <button id="siBtn">Compute</button>
+    <div class="result" id="siResult"></div>
+    <pre id="siSteps"></pre>
+  </section>
+
+  <!-- Pythagorean Theorem -->
+  <section>
+    <h2>Pythagorean Theorem (Find c)</h2>
+    <label>a: <input id="pa" type="number" value="3"></label>
+    <label>b: <input id="pb" type="number" value="4"></label>
+    <button id="pBtn">Compute</button>
+    <div class="result" id="pResult"></div>
+    <pre id="pSteps"></pre>
+  </section>
+
+  <!-- Sine Function -->
+  <section>
+    <h2>Sine (θ = arcsin(opposite / hypotenuse))</h2>
+    <label>Opposite: <input id="so" type="number" value="4"></label>
+    <label>Hypotenuse: <input id="sh" type="number" value="5"></label>
+    <button id="sBtn">Compute</button>
+    <div class="result" id="sResult"></div>
+    <pre id="sSteps"></pre>
+  </section>
+
+  <!-- Cosine Function -->
+  <section>
+    <h2>Cosine (θ = arccos(adjacent / hypotenuse))</h2>
+    <label>Adjacent: <input id="ca" type="number" value="3"></label>
+    <label>Hypotenuse: <input id="ch" type="number" value="5"></label>
+    <button id="cBtn">Compute</button>
+    <div class="result" id="cResult"></div>
+    <pre id="cSteps"></pre>
+  </section>
+
+  <script>
+    async function postJSON(url, body) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      return res.json();
+    }
+
+    // Compound Interest
+    document.getElementById("ciBtn").addEventListener("click", async () => {
+      const data = await postJSON("/api/interest/compound", {
+        principal: document.getElementById("ciP").value,
+        rate: document.getElementById("ciR").value,
+        time: document.getElementById("ciT").value,
+        compounding: document.getElementById("ciN").value,
+      });
+      if (data.error) return showError("ciResult", data.message);
+      showResult("ciResult", data);
+      showSteps("ciSteps", data.steps);
+    });
+
+    // Simple Interest
+    document.getElementById("siBtn").addEventListener("click", async () => {
+      const data = await postJSON("/api/interest/simple", {
+        principal: document.getElementById("siP").value,
+        rate: document.getElementById("siR").value,
+        time: document.getElementById("siT").value,
+      });
+      if (data.error) return showError("siResult", data.message);
+      showResult("siResult", data);
+      showSteps("siSteps", data.steps);
+    });
+
+    // Pythagoras
+    document.getElementById("pBtn").addEventListener("click", async () => {
+      const data = await postJSON("/api/trig/pythagorean", {
+        a: document.getElementById("pa").value,
+        b: document.getElementById("pb").value,
+        find: "c",
+      });
+      if (data.error) return showError("pResult", data.message);
+      showResult("pResult", data);
+      showSteps("pSteps", data.steps);
+    });
+
+    // Sine
+    document.getElementById("sBtn").addEventListener("click", async () => {
+      const data = await postJSON("/api/trig/sine", {
+        opposite: document.getElementById("so").value,
+        hypotenuse: document.getElementById("sh").value,
+      });
+      if (data.error) return showError("sResult", data.message);
+      showResult("sResult", data);
+      showSteps("sSteps", data.steps);
+    });
+
+    // Cosine
+    document.getElementById("cBtn").addEventListener("click", async () => {
+      const data = await postJSON("/api/trig/cosine", {
+        adjacent: document.getElementById("ca").value,
+        hypotenuse: document.getElementById("ch").value,
+      });
+      if (data.error) return showError("cResult", data.message);
+      showResult("cResult", data);
+      showSteps("cSteps", data.steps);
+    });
+
+    // Utility functions
+    function showResult(id, data) {
+      const el = document.getElementById(id);
+      el.innerHTML = "";
+      Object.keys(data).forEach((k) => {
+        if (k !== "steps" && !Array.isArray(data[k]))
+          el.innerHTML += `<p><b>${k}:</b> ${data[k]}</p>`;
+      });
+    }
+
+    function showSteps(id, steps) {
+      const el = document.getElementById(id);
+      el.textContent = steps ? steps.join("\\n") : "No steps.";
+    }
+
+    function showError(id, msg) {
+      document.getElementById(id).innerHTML = `<p style='color:red'>${msg}</p>`;
+    }
+  </script>
+</body>
+</html>
